@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotBranchAPI", "PlotBranchAPI.csproj", "{71F1F751-222A-47C0-9CED-8E746AE7892E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71F1F751-222A-47C0-9CED-8E746AE7892E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71F1F751-222A-47C0-9CED-8E746AE7892E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71F1F751-222A-47C0-9CED-8E746AE7892E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71F1F751-222A-47C0-9CED-8E746AE7892E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E20FC35-A257-48B6-B103-2FFFAB3648AA}
+	EndGlobalSection
+EndGlobal
