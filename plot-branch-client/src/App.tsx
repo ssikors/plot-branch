@@ -1,41 +1,104 @@
 import { useState, useCallback } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type NodeChange, type EdgeChange } from '@xyflow/react';
+import {
+  ReactFlow,
+  applyNodeChanges,
+  applyEdgeChanges,
+  addEdge,
+  type Node,
+  type Edge,
+  type NodeChange,
+  type EdgeChange,
+  Background,
+  Controls,
+  Panel,
+  type NodeTypes,
+  useReactFlow,
+} from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
- 
-const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
+import { StoryNode } from './components/StoryNode';
+
+const initialNodes: Node[] = [
+  {
+    id: 'n1',
+    type: 'storyNode',
+    position: { x: 200, y: 0 },
+    data: { value: 123 },
+  },
 ];
-const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
- 
+
+const initialEdges: Edge[] = [];
+
 export default function App() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
- 
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+
+  const reactFlow = useReactFlow();
+
+
   const onNodesChange = useCallback(
-    (changes: NodeChange<{ id: string; position: { x: number; y: number; }; data: { label: string; }; }>[]) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    [],
+    (changes: NodeChange[]) =>
+      setNodes((nds) => applyNodeChanges(changes, nds)),
+    []
   );
+
   const onEdgesChange = useCallback(
-    (changes: EdgeChange<{ id: string; source: string; target: string; }>[]) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    [],
+    (changes: EdgeChange[]) =>
+      setEdges((eds) => applyEdgeChanges(changes, eds)),
+    []
   );
+
   const onConnect = useCallback(
-    (params: any) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-    [],
+    (params: any) =>
+      setEdges((eds) => addEdge(params, eds)),
+    []
   );
- 
+
+  function addStoryNode() {
+    const id = `story-${nodes.length + 1}`;
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    const pos = reactFlow.screenToFlowPosition({x: centerX, y: centerY})
+
+    setNodes((nds) => [
+      ...nds,
+      {
+        id,
+        type: 'storyNode',
+        position: pos,
+        data: { value: Math.floor(Math.random() * 1000) },
+      },
+    ]);
+  };
+
+  const nodeTypes: NodeTypes = {
+    storyNode: StoryNode
+  }
+
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <ReactFlow
-        className='text-black'
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        fitView
-      />
+    <div className="w-screen h-screen text-black">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          fitView
+        >
+          <Background />
+          <Controls />
+
+          <Panel position="bottom-center">
+            <button
+              onClick={addStoryNode}
+              className="rounded bg-black px-3 py-1 text-white"
+            >
+              Add node
+            </button>
+          </Panel>
+        </ReactFlow>
     </div>
   );
 }
