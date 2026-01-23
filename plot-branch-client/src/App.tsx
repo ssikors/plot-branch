@@ -22,7 +22,7 @@ const initialNodes: Node[] = [
     id: 'n1',
     type: 'storyNode',
     position: { x: 200, y: 0 },
-    data: { value: 123 },
+    data: { description: "The story begins" },
   },
 ];
 
@@ -67,7 +67,7 @@ export default function App() {
         id,
         type: 'storyNode',
         position: pos,
-        data: { value: Math.floor(Math.random() * 1000) },
+        data: { description: "..." },
       },
     ]);
   };
