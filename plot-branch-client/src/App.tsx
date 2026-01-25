@@ -1,13 +1,7 @@
-import { useState, useCallback } from 'react';
+
 import {
   ReactFlow,
-  applyNodeChanges,
-  applyEdgeChanges,
-  addEdge,
-  type Node,
-  type Edge,
-  type NodeChange,
-  type EdgeChange,
+
   Background,
   Controls,
   Panel,
@@ -17,41 +11,25 @@ import {
 import '@xyflow/react/dist/style.css';
 import { StoryNode } from './components/StoryNode';
 
-const initialNodes: Node[] = [
-  {
-    id: 'n1',
-    type: 'storyNode',
-    position: { x: 200, y: 0 },
-    data: { description: "The story begins" },
-  },
-];
+import useStore from './store/store';
+import { useShallow } from 'zustand/shallow';
 
-const initialEdges: Edge[] = [];
+const selector = (state: any) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+  setNodes: state.setNodes
+});
+
 
 export default function App() {
-  const [nodes, setNodes] = useState<Node[]>(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes } = useStore(
+    useShallow(selector),
+  );
 
   const reactFlow = useReactFlow();
-
-
-  const onNodesChange = useCallback(
-    (changes: NodeChange[]) =>
-      setNodes((nds) => applyNodeChanges(changes, nds)),
-    []
-  );
-
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) =>
-      setEdges((eds) => applyEdgeChanges(changes, eds)),
-    []
-  );
-
-  const onConnect = useCallback(
-    (params: any) =>
-      setEdges((eds) => addEdge(params, eds)),
-    []
-  );
 
   function addStoryNode() {
     const id = `story-${nodes.length + 1}`;
@@ -61,17 +39,15 @@ export default function App() {
 
     const pos = reactFlow.screenToFlowPosition({x: centerX, y: centerY})
 
-    setNodes((nds) => [
-      ...nds,
+    setNodes([...nodes,
       {
         id,
         type: 'storyNode',
         position: pos,
         data: { description: "..." },
-      },
-    ]);
+      }]
+    );
   };
-
   const nodeTypes: NodeTypes = {
     storyNode: StoryNode
   }
