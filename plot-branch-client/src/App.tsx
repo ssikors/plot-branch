@@ -13,6 +13,8 @@ import { StoryNode } from './components/StoryNode';
 
 import useStore from './store/store';
 import { useShallow } from 'zustand/shallow';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 const selector = (state: any) => ({
   nodes: state.nodes,
@@ -29,6 +31,21 @@ export default function App() {
     useShallow(selector),
   );
 
+  const healthCheck = async () =>  {
+    
+    try {
+      var data = await axios.get('/api/Graph/health').then(r => r.data)
+      console.log("Health check success, API connected:", data)
+    } catch (e) {
+      console.error("Health check failed, cant reach API", e)
+    }
+  }
+
+
+  useEffect(() => {
+    healthCheck();
+  }, []);
+
   const reactFlow = useReactFlow();
 
   function addStoryNode() {
@@ -37,15 +54,15 @@ export default function App() {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
 
-    const pos = reactFlow.screenToFlowPosition({x: centerX, y: centerY})
+    const pos = reactFlow.screenToFlowPosition({ x: centerX, y: centerY })
 
     setNodes([...nodes,
-      {
-        id,
-        type: 'storyNode',
-        position: pos,
-        data: { description: "..." },
-      }]
+    {
+      id,
+      type: 'storyNode',
+      position: pos,
+      data: { description: "..." },
+    }]
     );
   };
   const nodeTypes: NodeTypes = {
@@ -54,27 +71,27 @@ export default function App() {
 
   return (
     <div className="w-screen h-screen text-black">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          fitView
-        >
-          <Background />
-          <Controls />
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+      >
+        <Background />
+        <Controls />
 
-          <Panel position="bottom-center">
-            <button
-              onClick={addStoryNode}
-              className="rounded bg-black px-3 py-1 text-white"
-            >
-              Add node
-            </button>
-          </Panel>
-        </ReactFlow>
+        <Panel position="bottom-center">
+          <button
+            onClick={addStoryNode}
+            className="rounded bg-black px-3 py-1 text-white"
+          >
+            Add node
+          </button>
+        </Panel>
+      </ReactFlow>
     </div>
   );
 }
