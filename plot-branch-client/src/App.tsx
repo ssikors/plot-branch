@@ -16,6 +16,7 @@ import { useShallow } from 'zustand/shallow';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { StartNode } from './components/nodes/StartNode';
+import { ChoiceNode } from './components/nodes/ChoiceNode';
 
 const selector = (state: any) => ({
   nodes: state.nodes,
@@ -54,6 +55,24 @@ export default function App() {
     console.log(JSON.stringify(flow))
   }
 
+  function addChoiceNode() {
+    const id = `choice-${nodes.length + 1}`;
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    const pos = reactFlow.screenToFlowPosition({ x: centerX, y: centerY })
+
+    setNodes([...nodes,
+    {
+      id,
+      type: 'choiceNode',
+      position: pos,
+      data: {},
+    }]
+    );
+  };
+
   function addStoryNode() {
     const id = `story-${nodes.length + 1}`;
 
@@ -73,7 +92,8 @@ export default function App() {
   };
   const nodeTypes: NodeTypes = {
     storyNode: StoryNode,
-    startNode: StartNode
+    startNode: StartNode,
+    choiceNode: ChoiceNode
   }
 
   return (
@@ -96,6 +116,12 @@ export default function App() {
             className="rounded bg-black px-3 py-1 text-white"
           >
             Add node
+          </button>
+          <button
+            onClick={addChoiceNode}
+            className="rounded bg-black px-3 py-1 text-white"
+          >
+            Add choice
           </button>
           <button
             onClick={onSave}
