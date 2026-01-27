@@ -9,12 +9,13 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { StoryNode } from './components/StoryNode';
+import { StoryNode } from './components/nodes/StoryNode';
 
 import useStore from './store/store';
 import { useShallow } from 'zustand/shallow';
 import { useEffect } from 'react';
 import axios from 'axios';
+import { StartNode } from './components/nodes/StartNode';
 
 const selector = (state: any) => ({
   nodes: state.nodes,
@@ -48,6 +49,11 @@ export default function App() {
 
   const reactFlow = useReactFlow();
 
+  const onSave = () => {
+    const flow = reactFlow.toObject()
+    console.log(JSON.stringify(flow))
+  }
+
   function addStoryNode() {
     const id = `story-${nodes.length + 1}`;
 
@@ -66,7 +72,8 @@ export default function App() {
     );
   };
   const nodeTypes: NodeTypes = {
-    storyNode: StoryNode
+    storyNode: StoryNode,
+    startNode: StartNode
   }
 
   return (
@@ -89,6 +96,12 @@ export default function App() {
             className="rounded bg-black px-3 py-1 text-white"
           >
             Add node
+          </button>
+          <button
+            onClick={onSave}
+            className="rounded bg-black px-3 py-1 text-white"
+          >
+            Save flow
           </button>
         </Panel>
       </ReactFlow>

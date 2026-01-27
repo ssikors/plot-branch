@@ -1,5 +1,5 @@
 
-import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
+import { Handle, Position, useNodeConnections, type NodeProps, type Node } from '@xyflow/react';
 import { useState } from 'react';
 
 type StoryNode = Node<{ description: string }, 'value'>;
@@ -8,13 +8,17 @@ export function StoryNode({ data }: NodeProps<StoryNode>) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(data.description);
 
+  const connections = useNodeConnections({
+    handleType: "source",
+  });
+
   const commit = () => {
     data.description = value;
     setIsEditing(false);
   };
 
   return (
-    <div className="rounded border bg-white p-3 shadow min-w-37.5">
+    <div className="rounded border bg-white p-3 shadow min-w-37.5 text-center">
       <div className="font-bold mb-1">Story Node</div>
 
       {isEditing ? (
@@ -42,7 +46,7 @@ export function StoryNode({ data }: NodeProps<StoryNode>) {
       )}
 
       <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Bottom} />
+      <Handle isConnectable={connections.length < 1} type="source" position={Position.Bottom} />
     </div>
   );
 }
