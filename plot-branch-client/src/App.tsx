@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { StartNode } from './components/nodes/StartNode';
 import { ChoiceNode } from './components/nodes/ChoiceNode';
+import { sendFlowToApi } from './api/sendFlow';
 
 const selector = (state: any) => ({
   nodes: state.nodes,
@@ -50,10 +51,18 @@ export default function App() {
 
   const reactFlow = useReactFlow();
 
-  const onSave = () => {
-    const flow = reactFlow.toObject()
-    console.log(JSON.stringify(flow))
+  const onSave = async () => {
+  const flow = reactFlow.toObject();
+
+  console.log(JSON.stringify(flow));
+
+  try {
+    await sendFlowToApi(flow);
+    console.log("Flow saved successfully");
+  } catch (err) {
+    console.error("Failed to save flow");
   }
+};
 
   function addChoiceNode() {
     const id = `choice-${nodes.length + 1}`;
