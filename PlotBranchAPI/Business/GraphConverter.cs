@@ -38,8 +38,7 @@ namespace PlotBranchAPI.Business
                 }
             }
 
-            // Return all nodes (you may later filter roots if needed)
-            return nodeLookup.Values.ToList();
+            return nodeLookup.Values.Where(n => n.ParentNodes.Count == 0).ToList();
         }
     }
 
