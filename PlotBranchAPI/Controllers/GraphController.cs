@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PlotBranchAPI.Business;
+using PlotBranchAPI.Data;
 using PlotBranchAPI.Models.GraphDto;
 
 namespace PlotBranchAPI.Controllers
@@ -10,6 +11,13 @@ namespace PlotBranchAPI.Controllers
     [ApiController]
     public class GraphController : ControllerBase
     {
+        private readonly GraphDbContext _context;
+
+        public GraphController(GraphDbContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet("health")]
         public ActionResult<string> GetHealth()
         {

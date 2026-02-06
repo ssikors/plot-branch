@@ -38,7 +38,7 @@ namespace PlotBranchAPI.Business
                 }
             }
 
-            return nodeLookup.Values.Where(n => n.ParentNodes.Count == 0).ToList();
+            return nodeLookup.Values.ToList();
         }
     }
 
