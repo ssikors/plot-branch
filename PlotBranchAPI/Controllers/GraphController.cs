@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PlotBranchAPI.Business;
 using PlotBranchAPI.Data;
+using PlotBranchAPI.Models.DTOs;
+using PlotBranchAPI.Models;
+using PlotBranchAPI.Models.Entities;
 using PlotBranchAPI.Models.GraphDto;
 
 namespace PlotBranchAPI.Controllers
@@ -22,6 +25,39 @@ namespace PlotBranchAPI.Controllers
         public ActionResult<string> GetHealth()
         {
             return Ok("Hello world");
+        }
+
+        // GET ALL FLOWS
+        [HttpGet]
+        public async Task<IActionResult> GetFlows()
+        {
+            var flows = _context.PlotFlows
+                .Select(f => new PlotFlowListDto
+                {
+                    Id = f.Id.ToString(),
+                    Name = f.Name
+                })
+                .ToList();
+
+            return Ok(flows);
+        }
+
+        // CREATE NEW FLOW
+        [HttpPost]
+        public async Task<IActionResult> CreateFlow([FromBody] CreatePlotFlowDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Name))
+                return BadRequest("Name is required");
+
+            var flow = new PlotFlow
+            {
+                Name = dto.Name
+            };
+
+            await _context.PlotFlows.AddAsync(flow);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { flow.Id, flow.Name });
         }
 
 

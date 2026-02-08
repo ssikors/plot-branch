@@ -7,8 +7,5 @@
         public NodePosition Position { get; set; }
         public NodeData Data { get; set; }
         public Measured Measured { get; set; }
-
-        public bool? Selected { get; set; }
-        public bool? Dragging { get; set; }
     }
 }
