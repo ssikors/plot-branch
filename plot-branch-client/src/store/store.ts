@@ -1,35 +1,77 @@
-import { create } from 'zustand';
-import { addEdge, applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
+import { create } from "zustand";
+import {
+  addEdge,
+  applyNodeChanges,
+  applyEdgeChanges,
+} from "@xyflow/react";
 
-import { initialNodes } from './nodes';
-import { initialEdges } from './edges';
-import { type AppState } from './types';
+import { createStoryNode, updateNode, createEdge, updateEdge } from "../api/plotFlowApi";
 
-// this is our useStore hook that we can use in our components to get parts of the store and call actions
-const useStore = create<AppState>((set, get) => ({
-  nodes: initialNodes,
-  edges: initialEdges,
-  onNodesChange: (changes) => {
+import type { FlowStore } from "./types";
+
+const useStore = create<FlowStore>((set, get) => ({
+  flowId: "",
+
+  nodes: [],
+  edges: [],
+
+  setFlowId: (id) => set({ flowId: id }),
+
+
+  addStoryNode: async (position) => {
+    const flowId = get().flowId;
+
+    const newNode = await createStoryNode(flowId, position);
+
     set({
-      nodes: applyNodeChanges(changes, get().nodes),
+      nodes: [
+        ...get().nodes,
+        {
+          id: newNode.id,
+          type: "storyNode",
+          position: {
+            x: newNode.positionX,
+            y: newNode.positionY 
+          },
+          data: newNode.data
+        }
+      ]
     });
   },
-  onEdgesChange: (changes) => {
+
+
+  onNodesChange: async (changes) => {
+    const updatedNodes = applyNodeChanges(changes, get().nodes);
+
+    set({ nodes: updatedNodes });
+
+    for (const change of changes) {
+      const node = updatedNodes.find(n => n.id === change.id);
+      if (node) await updateNode(node);
+    }
+  },
+
+
+  onConnect: async (connection) => {
+    const flowId = get().flowId;
+
+    const newEdge = await createEdge(flowId, connection);
+
     set({
-      edges: applyEdgeChanges(changes, get().edges),
+      edges: addEdge(newEdge, get().edges)
     });
   },
-  onConnect: (connection) => {
-    set({
-      edges: addEdge(connection, get().edges),
-    });
-  },
-  setNodes: (nodes) => {
-    set({ nodes });
-  },
-  setEdges: (edges) => {
-    set({ edges });
-  },
+
+  onEdgesChange: async (changes) => {
+    const updatedEdges = applyEdgeChanges(changes, get().edges);
+
+    set({ edges: updatedEdges });
+
+    for (const change of changes) {
+      const edge = updatedEdges.find(e => e.id === change.id);
+      if (edge) await updateEdge(edge);
+    }
+  }
 }));
 
 export default useStore;

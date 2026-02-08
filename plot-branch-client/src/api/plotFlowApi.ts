@@ -28,3 +28,38 @@ export const sendFlowToApi = async (flow : ReactFlowJsonObject) => {
     throw error;
   }
 };
+
+
+export const createStoryNode = async (
+  flowId: string,
+  position: { x: number; y: number }
+) => {
+  const res = await axios.post(`/api/Node`, {
+    flowId,
+    type: "storyNode",
+    positionX: position.x,
+    positionY: position.y,
+    data: { description: "..." }
+  });
+
+  return res.data;
+};
+
+export const updateNode = async (node: any) => {
+  await axios.put(`/api/Node/${node.id}`, node);
+};
+
+
+
+export const createEdge = async (flowId: string, connection: any) => {
+  const res = await axios.post(`/api/Edge`, {
+    flowId,
+    ...connection
+  });
+
+  return res.data;
+};
+
+export const updateEdge = async (edge: any) => {
+  await axios.put(`/api/Edge/${edge.id}`, edge);
+};

@@ -1,17 +1,15 @@
-import {
-  type Edge,
-  type Node,
-  type OnNodesChange,
-  type OnEdgesChange,
-  type OnConnect,
-} from '@xyflow/react';
+import type { Node, Edge } from "@xyflow/react";
 
-export type AppState = {
+export interface FlowStore {
+  flowId: string;
   nodes: Node[];
   edges: Edge[];
-  onNodesChange: OnNodesChange<Node>;
-  onEdgesChange: OnEdgesChange;
-  onConnect: OnConnect;
-  setNodes: (nodes: Node[]) => void;
-  setEdges: (edges: Edge[]) => void;
-};
+
+  setFlowId: (id: string) => void;
+
+  addStoryNode: (position: { x: number; y: number }) => Promise<void>;
+
+  onNodesChange: (changes: any) => Promise<void>;
+  onEdgesChange: (changes: any) => Promise<void>;
+  onConnect: (connection: any) => Promise<void>;
+}

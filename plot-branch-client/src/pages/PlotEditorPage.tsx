@@ -9,14 +9,16 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { StoryNode } from '../components/nodes/StoryNode';
+import { useParams } from "react-router-dom";
 
-import useStore from '../store/store';
+
 import { useShallow } from 'zustand/shallow';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { StartNode } from '../components/nodes/StartNode';
 import { ChoiceNode } from '../components/nodes/ChoiceNode';
 import { sendFlowToApi } from '../api/plotFlowApi';
+import useStore from '../store/store';
 
 const selector = (state: any) => ({
   nodes: state.nodes,
@@ -24,17 +26,33 @@ const selector = (state: any) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
-  setNodes: state.setNodes
 });
 
 
 export default function PlotEditorPage() {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes } = useStore(
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
     useShallow(selector),
   );
 
-  const healthCheck = async () =>  {
-    
+  const { flowId } = useParams();
+
+  const { addStoryNode, setFlowId } = useStore();
+
+  function handleAddStoryNode() {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    const pos = reactFlow.screenToFlowPosition({
+      x: centerX,
+      y: centerY
+    });
+
+    addStoryNode(pos);
+  }
+
+
+  const healthCheck = async () => {
+
     try {
       var data = await axios.get('/api/Graph/health').then(r => r.data)
       console.log("Health check success, API connected:", data)
@@ -42,6 +60,10 @@ export default function PlotEditorPage() {
       console.error("Health check failed, cant reach API", e)
     }
   }
+
+  useEffect(() => {
+    if (flowId) setFlowId(flowId);
+  }, [flowId]);
 
 
   useEffect(() => {
@@ -51,57 +73,22 @@ export default function PlotEditorPage() {
   const reactFlow = useReactFlow();
 
   const onSave = async () => {
-  const flow = reactFlow.toObject();
+    const flow = reactFlow.toObject();
 
-  console.log(JSON.stringify(flow));
+    console.log(JSON.stringify(flow));
 
-  try {
-    await sendFlowToApi(flow);
-    console.log("Flow saved successfully");
-  } catch (err) {
-    console.error("Failed to save flow");
-  }
-};
-
-  function addChoiceNode() {
-    const id = `choice-${nodes.length + 1}`;
-
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-
-    const pos = reactFlow.screenToFlowPosition({ x: centerX, y: centerY })
-
-    setNodes([...nodes,
-    {
-      id,
-      type: 'choiceNode',
-      position: pos,
-      data: {},
-    }]
-    );
+    try {
+      await sendFlowToApi(flow);
+      console.log("Flow saved successfully");
+    } catch (err) {
+      console.error("Failed to save flow");
+    }
   };
 
-  function addStoryNode() {
-    const id = `story-${nodes.length + 1}`;
 
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
 
-    const pos = reactFlow.screenToFlowPosition({ x: centerX, y: centerY })
-
-    setNodes([...nodes,
-    {
-      id,
-      type: 'storyNode',
-      position: pos,
-      data: { description: "..." },
-    }]
-    );
-  };
   const nodeTypes: NodeTypes = {
     storyNode: StoryNode,
-    startNode: StartNode,
-    choiceNode: ChoiceNode
   }
 
   return (
@@ -120,17 +107,12 @@ export default function PlotEditorPage() {
 
         <Panel position="bottom-center">
           <button
-            onClick={addStoryNode}
+            onClick={handleAddStoryNode}
             className="rounded bg-black px-3 py-1 text-white"
           >
             Add node
           </button>
-          <button
-            onClick={addChoiceNode}
-            className="rounded bg-black px-3 py-1 text-white"
-          >
-            Add choice
-          </button>
+
           <button
             onClick={onSave}
             className="rounded bg-black px-3 py-1 text-white"
