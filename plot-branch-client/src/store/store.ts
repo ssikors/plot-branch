@@ -3,8 +3,8 @@ import {
   addEdge,
   applyNodeChanges,
   applyEdgeChanges,
+  type EdgeChange,
   type NodeChange,
-  type NodeTypes,
 } from "@xyflow/react";
 
 import { createStoryNode, updateNode, createEdge, updateEdge } from "../api/plotFlowApi";
@@ -70,7 +70,7 @@ const useStore = create<FlowStore>((set, get) => ({
 
   onEdgesChange: async (changes) => {
     const updatedEdges = applyEdgeChanges(changes, get().edges);
-
+    
     set({ edges: updatedEdges });
 
     for (const change of changes) {

@@ -52,7 +52,7 @@ namespace PlotBranchAPI.Controllers
             await _context.Edges.AddAsync(edge);
             await _context.SaveChangesAsync();
 
-            return Ok(edge.Id);
+            return Ok(edge);
         }
 
         [HttpDelete("{id}")]
