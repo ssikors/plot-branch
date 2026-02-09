@@ -39,6 +39,8 @@ namespace PlotBranchAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetNodes([FromQuery] Guid plotFlowId)
         {
+            Console.WriteLine($"Query PlotFlowId: {plotFlowId}");
+
             var nodes = await _context.Nodes
                 .Include(n => n.Data)
                 .Where(n => n.PlotFlowId == plotFlowId)
@@ -60,11 +62,20 @@ namespace PlotBranchAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNode(CreateNodeDto dto)
         {
+            Console.WriteLine(dto.PlotFlowId);
+
+            var plotFlow = await _context.PlotFlows.FindAsync(dto.PlotFlowId);
+
+            if (plotFlow == null)
+            {
+                return BadRequest("PlotFlow not found");
+            }
+
             var node = new NodeEntity
             {
                 Id = Guid.NewGuid(),
                 Type = dto.Type,
-                PlotFlowId = dto.PlotFlowId,
+                PlotFlow = plotFlow,
                 PositionX = dto.PositionX,
                 PositionY = dto.PositionY,
                 Data = new NodeData
@@ -92,7 +103,6 @@ namespace PlotBranchAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateNode(Guid id, [FromBody] NodeDto dto)
         {
-            Console.WriteLine("Updating");
             if (id != dto.Id)
                 return BadRequest("Id mismatch");
 

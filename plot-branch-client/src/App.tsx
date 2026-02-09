@@ -7,7 +7,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<PlotFlowListPage />} />
-      <Route path="/plots/:id" element={<ReactFlowProvider><PlotEditorPage /></ReactFlowProvider>} />
+      <Route path="/plots/:flowId" element={<ReactFlowProvider><PlotEditorPage /></ReactFlowProvider>} />
     </Routes>
   );
 }

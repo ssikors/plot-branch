@@ -27,8 +27,8 @@ export default function PlotFlowListPage() {
     await loadFlows();
   };
 
-  const openFlow = (id: string) => {
-    navigate(`/plots/${id}`);
+  const openFlow = (flowId: string) => {
+    navigate(`/plots/${flowId}`);
   };
 
   return (

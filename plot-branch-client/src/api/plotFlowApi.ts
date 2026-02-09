@@ -37,7 +37,7 @@ export const createStoryNode = async (
   console.log("Sending create node request...")
 
   const res = await axios.post(`/api/Node`, {
-    flowId,
+    plotFlowId: flowId,
     type: "storyNode",
     positionX: position.x,
     positionY: position.y,
