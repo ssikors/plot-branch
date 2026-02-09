@@ -46,7 +46,7 @@ export function StoryNode({ data }: NodeProps<StoryNode>) {
       )}
 
       <Handle type="target" position={Position.Top} />
-      <Handle isConnectable={connections.length < 1} type="source" position={Position.Bottom} />
+      <Handle type="source" position={Position.Bottom} />
     </div>
   );
 }

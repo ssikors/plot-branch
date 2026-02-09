@@ -10,18 +10,45 @@ import {
 import { createStoryNode, updateNode, createEdge, updateEdge } from "../api/plotFlowApi";
 
 import type { FlowStore } from "./types";
+import { createCharacter, getCharacters } from "../api/characterApi";
 
 const useStore = create<FlowStore>((set, get) => ({
   flowId: "",
 
   nodes: [],
   edges: [],
+  characters: [],
 
-  setFlowId: (id) => set({ flowId: id }),
+  setFlowId: async (id) => {
+    set({ flowId: id });
+
+    await get().loadCharacters();
+  },
+
 
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
 
+  setCharacters: (characters) => set({ characters }),
+
+  loadCharacters: async () => {
+    const flowId = get().flowId;
+    if (!flowId) return;
+
+    const characters = await getCharacters(flowId);
+    set({ characters });
+  },
+
+  addCharacter: async (name) => {
+    const flowId = get().flowId;
+    if (!flowId || !name.trim()) return;
+
+    const newCharacter = await createCharacter(flowId, name);
+
+    set({
+      characters: [...get().characters, newCharacter]
+    });
+  },
 
   addStoryNode: async (position) => {
     const flowId = get().flowId;
@@ -36,7 +63,7 @@ const useStore = create<FlowStore>((set, get) => ({
           type: "storyNode",
           position: {
             x: newNode.positionX,
-            y: newNode.positionY 
+            y: newNode.positionY
           },
           data: newNode.data
         }
@@ -51,7 +78,7 @@ const useStore = create<FlowStore>((set, get) => ({
     set({ nodes: updatedNodes });
 
     for (const change of changes) {
-      if (change.type ==  "position") {
+      if (change.type == "position") {
         if (change.dragging) return;
       }
 
@@ -73,7 +100,7 @@ const useStore = create<FlowStore>((set, get) => ({
 
   onEdgesChange: async (changes) => {
     const updatedEdges = applyEdgeChanges(changes, get().edges);
-    
+
     set({ edges: updatedEdges });
 
     for (const change of changes) {

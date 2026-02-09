@@ -62,8 +62,6 @@ namespace PlotBranchAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNode(CreateNodeDto dto)
         {
-            Console.WriteLine(dto.PlotFlowId);
-
             var plotFlow = await _context.PlotFlows.FindAsync(dto.PlotFlowId);
 
             if (plotFlow == null)

@@ -1,83 +1,60 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getCharacters, createCharacter, type CharacterDto } from "../api/characterApi";
+import { useState } from "react";
+import useStore from "../store/store";
 
 export default function EditorToolbar() {
-  const { flowId } = useParams();
+  const characters = useStore(s => s.characters);
+  const addCharacter = useStore(s => s.addCharacter);
 
   const [expanded, setExpanded] = useState(false);
-  const [characters, setCharacters] = useState<CharacterDto[]>([]);
-  const [newName, setNewName] = useState("");
-
-  async function loadCharacters() {
-    if (!flowId) return;
-
-    const data = await getCharacters(flowId);
-    setCharacters(data);
-  }
+  const [name, setName] = useState("");
 
   async function handleAddCharacter() {
-    if (!flowId || !newName.trim()) return;
+    if (!name.trim()) return;
 
-    const newCharacter = await createCharacter(flowId, newName);
-
-    setCharacters(prev => [...prev, newCharacter]);
-    setNewName("");
+    await addCharacter(name);
+    setName("");
   }
 
-  useEffect(() => {
-    loadCharacters();
-  }, [flowId]);
-
   return (
-    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50">
-      <div className="bg-white shadow-lg rounded p-2 w-64">
+    <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white shadow rounded p-3 z-50">
 
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="w-full font-bold text-left"
-        >
-          Characters
-        </button>
-        
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="font-bold"
+      >
+        Characters
+      </button>
 
-        {expanded && (
-          <div className="mt-2 space-y-2">
+      {expanded && (
+        <div className="mt-3 w-60">
 
-            <div className="max-h-40 overflow-y-auto border rounded p-2">
-              {characters.length === 0 && (
-                <div className="text-gray-400 text-sm">
-                  No characters yet
-                </div>
-              )}
+          <ul className="max-h-40 overflow-y-auto mb-2">
+            {characters.map(c => (
+              <li key={c.id} className="text-sm">
+                {c.name}
+              </li>
+            ))}
+          </ul>
 
-              {characters.map(c => (
-                <div key={c.id} className="text-sm">
-                  {c.name}
-                </div>
-              ))}
-            </div>
+          <div className="flex gap-2">
+            <input
+              className="border px-2 py-1 flex-1"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Character name"
+            />
 
-            <div className="flex gap-2">
-              <input
-                value={newName}
-                onChange={e => setNewName(e.target.value)}
-                placeholder="Character name"
-                className="border rounded px-2 py-1 w-full text-sm"
-              />
-
-              <button
-                onClick={handleAddCharacter}
-                className="bg-black text-white px-2 rounded text-sm"
-              >
-                Add
-              </button>
-            </div>
-
+            <button
+              onClick={handleAddCharacter}
+              className="bg-black text-white px-2"
+            >
+              Add
+            </button>
           </div>
-        )}
-      </div>
-      
+
+        </div>
+      )}
+
     </div>
   );
 }
