@@ -19,6 +19,9 @@ const useStore = create<FlowStore>((set, get) => ({
 
   setFlowId: (id) => set({ flowId: id }),
 
+  setNodes: (nodes) => set({ nodes }),
+  setEdges: (edges) => set({ edges }),
+
 
   addStoryNode: async (position) => {
     const flowId = get().flowId;

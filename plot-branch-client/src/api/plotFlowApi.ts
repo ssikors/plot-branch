@@ -67,7 +67,7 @@ export const updateNode = async (node: Node) => {
 
 export const createEdge = async (flowId: string, connection: any) => {
   const res = await axios.post(`/api/Edge`, {
-    flowId,
+    plotFlowId: flowId,
     ...connection
   });
 

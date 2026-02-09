@@ -10,13 +10,9 @@ import {
 import '@xyflow/react/dist/style.css';
 import { StoryNode } from '../components/nodes/StoryNode';
 import { useParams } from "react-router-dom";
-
-
 import { useShallow } from 'zustand/shallow';
 import { useEffect } from 'react';
 import axios from 'axios';
-import { StartNode } from '../components/nodes/StartNode';
-import { ChoiceNode } from '../components/nodes/ChoiceNode';
 import { sendFlowToApi } from '../api/plotFlowApi';
 import useStore from '../store/store';
 import EditorToolbar from '../components/EditorToolbar';
@@ -37,7 +33,51 @@ export default function PlotEditorPage() {
 
   const { flowId } = useParams();
 
-  const { addStoryNode, setFlowId } = useStore();
+  const { addStoryNode, setFlowId, setNodes, setEdges } = useStore();
+
+  useEffect(() => {
+  if (!flowId) return;
+
+  const loadFlow = async () => {
+
+    try {
+      const nodesResponse = await axios.get('/api/Node', {
+        params: { plotFlowId: flowId }
+      });
+
+      const edgesResponse = await axios.get('/api/Edge', {
+        params: { plotFlowId: flowId }
+      });
+
+      const loadedNodes = nodesResponse.data.map((n: any) => ({
+        id: n.id.toString(),
+        type: n.type,
+        position: {
+          x: n.positionX,
+          y: n.positionY
+        },
+        data: n.data
+      }));
+
+      const loadedEdges = edgesResponse.data.map((e: any) => ({
+        id: e.id.toString(),
+        source: e.source.toString(),
+        target: e.target.toString(),
+        sourceHandle: e.sourceHandle
+      }));
+
+      setNodes(loadedNodes);
+      setEdges(loadedEdges);
+
+    } catch (err) {
+      console.error("Failed to load flow", err);
+    }
+  };
+
+  loadFlow();
+
+}, [flowId]);
+
 
   function handleAddStoryNode() {
     const centerX = window.innerWidth / 2;

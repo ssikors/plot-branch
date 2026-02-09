@@ -5,6 +5,10 @@ export interface FlowStore {
   nodes: Node[];
   edges: Edge[];
 
+  setNodes: (nodes: Node[]) => void;
+  setEdges: (edges: Edge[]) => void;
+
+
   setFlowId: (id: string) => void;
 
   addStoryNode: (position: { x: number; y: number }) => Promise<void>;
