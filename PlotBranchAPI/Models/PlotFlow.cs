@@ -8,5 +8,6 @@
 
         public List<NodeEntity> Nodes { get; set; } = new();
         public List<EdgeEntity> Edges { get; set; } = new();
+        public List<Character> Characters { get; set; } = new();
     }
 }

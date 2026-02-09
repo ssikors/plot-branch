@@ -19,6 +19,7 @@ import { StartNode } from '../components/nodes/StartNode';
 import { ChoiceNode } from '../components/nodes/ChoiceNode';
 import { sendFlowToApi } from '../api/plotFlowApi';
 import useStore from '../store/store';
+import EditorToolbar from '../components/EditorToolbar';
 
 const selector = (state: any) => ({
   nodes: state.nodes,
@@ -92,7 +93,10 @@ export default function PlotEditorPage() {
   }
 
   return (
-    <div className="w-screen h-screen text-black">
+    <div className="w-screen h-screen text-black relative">
+      
+      <EditorToolbar />
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
