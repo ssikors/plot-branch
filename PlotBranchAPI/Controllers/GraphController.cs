@@ -5,8 +5,6 @@ using PlotBranchAPI.Business;
 using PlotBranchAPI.Data;
 using PlotBranchAPI.Models.DTOs;
 using PlotBranchAPI.Models;
-using PlotBranchAPI.Models.Entities;
-using PlotBranchAPI.Models.GraphDto;
 
 namespace PlotBranchAPI.Controllers
 {
@@ -27,7 +25,6 @@ namespace PlotBranchAPI.Controllers
             return Ok("Hello world");
         }
 
-        // GET ALL FLOWS
         [HttpGet]
         public async Task<IActionResult> GetFlows()
         {
@@ -42,7 +39,6 @@ namespace PlotBranchAPI.Controllers
             return Ok(flows);
         }
 
-        // CREATE NEW FLOW
         [HttpPost]
         public async Task<IActionResult> CreateFlow([FromBody] CreatePlotFlowDto dto)
         {
@@ -61,23 +57,23 @@ namespace PlotBranchAPI.Controllers
         }
 
 
-        [HttpPost("save")]
-        public IActionResult SaveGraph([FromBody] GraphDto flow)
-        {
+        //[HttpPost("save")]
+        //public IActionResult SaveGraph([FromBody] GraphDto flow)
+        //{
 
-            if (flow == null)
-            {
-                return BadRequest("Flow is null");
-            }
+        //    if (flow == null)
+        //    {
+        //        return BadRequest("Flow is null");
+        //    }
                 
 
-            Console.WriteLine($"Received {flow.Nodes?.Count} nodes");
+        //    Console.WriteLine($"Received {flow.Nodes?.Count} nodes");
 
-            var nodes = GraphConverter.ConvertToNodeTree(flow);
+        //    var nodes = GraphConverter.ConvertToNodeTree(flow);
 
-            Console.WriteLine(nodes.Count);
+        //    Console.WriteLine(nodes.Count);
 
-            return Ok(new { message = "Flow received successfully" });
-        }
+        //    return Ok(new { message = "Flow received successfully" });
+        //}
     }
 }

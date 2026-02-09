@@ -1,31 +1,31 @@
-﻿using PlotBranchAPI.Models.Graph;
-using PlotBranchAPI.Models.GraphDto;
+﻿using PlotBranchAPI.Models;
+using PlotBranchAPI.Models.Converted;
 
 namespace PlotBranchAPI.Business
 {
     public static class GraphConverter
     {
-        public static List<Node> ConvertToNodeTree(GraphDto graph)
+        public static List<TraversableNode> ConvertToNodeTree(PlotFlow flow)
         {
-            if (graph == null || graph.Nodes == null)
-                return new List<Node>();
+            if (flow == null || flow.Nodes == null)
+                return new List<TraversableNode>();
 
             // Create lookup dictionary for fast node access
-            var nodeLookup = graph.Nodes.ToDictionary(
+            var nodeLookup = flow.Nodes.ToDictionary(
                 n => n.Id,
-                n => new Node
+                n => new TraversableNode
                 {
                     Id = n.Id,
                     Type = n.Type,
                     Data = n.Data,
-                    ParentNodes = new List<Node>(),
-                    ChildNodes = new List<Node>()
+                    ParentNodes = new List<TraversableNode>(),
+                    ChildNodes = new List<TraversableNode>()
                 });
 
             // Connect nodes using edges
-            if (graph.Edges != null)
+            if (flow.Edges != null)
             {
-                foreach (var edge in graph.Edges)
+                foreach (var edge in flow.Edges)
                 {
                     if (!nodeLookup.TryGetValue(edge.Source, out var parent))
                         continue;

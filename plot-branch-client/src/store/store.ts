@@ -3,6 +3,8 @@ import {
   addEdge,
   applyNodeChanges,
   applyEdgeChanges,
+  type NodeChange,
+  type NodeTypes,
 } from "@xyflow/react";
 
 import { createStoryNode, updateNode, createEdge, updateEdge } from "../api/plotFlowApi";
@@ -46,6 +48,10 @@ const useStore = create<FlowStore>((set, get) => ({
     set({ nodes: updatedNodes });
 
     for (const change of changes) {
+      if (change.type ==  "position") {
+        if (change.dragging) return;
+      }
+
       const node = updatedNodes.find(n => n.id === change.id);
       if (node) await updateNode(node);
     }

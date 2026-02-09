@@ -2,9 +2,6 @@
 {
     using Microsoft.EntityFrameworkCore;
     using PlotBranchAPI.Models;
-    using PlotBranchAPI.Models.Entities;
-    using PlotBranchAPI.Models.Graph;
-    using PlotBranchAPI.Models.GraphDto;
 
     public class GraphDbContext : DbContext
     {

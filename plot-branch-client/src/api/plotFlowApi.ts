@@ -1,15 +1,14 @@
 import axios from "axios";
-import type { ReactFlowJsonObject } from "@xyflow/react";
+import type { Node, ReactFlowJsonObject } from "@xyflow/react";
 
-const baseUrl = "/api/Graph";
 
 export const getPlotFlows = async () => {
-  const res = await axios.get(baseUrl);
+  const res = await axios.get("/api/Graph");
   return res.data;
 };
 
 export const createPlotFlow = async (name: string) => {
-  const res = await axios.post(baseUrl, { name });
+  const res = await axios.post("/api/Graph", { name });
   return res.data;
 };
 
@@ -34,6 +33,9 @@ export const createStoryNode = async (
   flowId: string,
   position: { x: number; y: number }
 ) => {
+
+  console.log("Sending create node request...")
+
   const res = await axios.post(`/api/Node`, {
     flowId,
     type: "storyNode",
@@ -42,11 +44,23 @@ export const createStoryNode = async (
     data: { description: "..." }
   });
 
+  console.log(res)
+
   return res.data;
 };
 
-export const updateNode = async (node: any) => {
-  await axios.put(`/api/Node/${node.id}`, node);
+export const updateNode = async (node: Node) => {
+  console.log("Sending update node request...")
+
+  const res = await axios.put(`/api/Node/${node.id}`, {
+    id: node.id,
+    type: node.type,
+    positionX: node.position.x,
+    positionY: node.position.y,
+    data: { description: node.data?.description }
+  });
+
+  console.log(res)
 };
 
 

@@ -18,6 +18,24 @@ namespace PlotBranchAPI.Controllers
             _context = context;
         }
 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllNodes()
+        {
+            var nodes = await _context.Nodes
+                .Include(n => n.Data)
+                .Select(n => new NodeDto
+                {
+                    Id = n.Id,
+                    Type = n.Type,
+                    Data = new NodeDataDto { Description = n.Data.Description },
+                    PositionX = n.PositionX,
+                    PositionY = n.PositionY
+                })
+                .ToListAsync();
+
+            return Ok(nodes);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetNodes([FromQuery] Guid plotFlowId)
         {
@@ -70,6 +88,43 @@ namespace PlotBranchAPI.Controllers
 
             return Ok(newNode);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateNode(Guid id, [FromBody] NodeDto dto)
+        {
+            Console.WriteLine("Updating");
+            if (id != dto.Id)
+                return BadRequest("Id mismatch");
+
+            var node = await _context.Nodes
+                .Include(n => n.Data)
+                .FirstOrDefaultAsync(n => n.Id == id);
+
+            if (node == null)
+                return NotFound();
+
+            node.Type = dto.Type;
+            node.PositionX = dto.PositionX;
+            node.PositionY = dto.PositionY;
+
+            if (node.Data == null)
+            {
+                node.Data = new NodeData
+                {
+                    NodeEntityId = node.Id
+                };
+            }
+
+            if (dto.Data != null)
+            {
+                node.Data.Description = dto.Data.Description;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(dto);
+        }
+
 
 
 
