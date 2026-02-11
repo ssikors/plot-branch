@@ -64,6 +64,34 @@ namespace PlotBranchAPI.Controllers
                 Name = character.Name
             });
         }
+
+
+        [HttpPost("Node")]
+        public async Task<IActionResult> AddCharacterToNode(
+                [FromQuery] Guid nodeId,
+                [FromBody] CharacterToNodeDto dto
+            )
+        {
+            NodeEntity? node = await _context.Nodes.FindAsync(nodeId);
+
+            if (node == null)
+            {
+                return NotFound("Node not found");
+            }
+
+            Character? character = await _context.Characters.FindAsync(dto.characterId);
+
+            if (character == null)
+            {
+                return NotFound("Character not found");
+            }
+
+            node.Characters.Add(character);
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 
 }

@@ -20,3 +20,14 @@ export const createCharacter = async (
 
   return res.data as CharacterDto;
 };
+
+export const addCharacterToNode = async (
+  nodeId: string,
+  characterId: string
+) => {
+  const res = await axios.post(`/api/Character/Node?nodeId=${nodeId}`, {
+    characterId
+  });
+
+  return res.status;
+};

@@ -43,12 +43,13 @@ namespace PlotBranchAPI.Controllers
 
             var nodes = await _context.Nodes
                 .Include(n => n.Data)
+                .Include(n => n.Characters)
                 .Where(n => n.PlotFlowId == plotFlowId)
                 .Select(n => new NodeDto
                 {
                     Id = n.Id,
                     Type = n.Type,
-                    Data = new NodeDataDto { Description = n.Data.Description},
+                    Data = new NodeDataDto { Description = n.Data.Description, CharacterIds = n.Characters.Select(c => c.Id.ToString()).ToList() },
                     PositionX = n.PositionX,
                     PositionY = n.PositionY
                 })

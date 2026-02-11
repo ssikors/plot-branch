@@ -7,6 +7,7 @@ import {
 
 import { useState } from 'react';
 import useStore from '../../store/store';
+import { addCharacterToNode } from '../../api/characterApi';
 
 export type StoryNodeData = {
   description: string;
@@ -40,11 +41,17 @@ export function StoryNode({ id, data }: NodeProps<StoryNodeType>) {
     c => !data.characterIds?.includes(c.id)
   );
 
-  function addCharacter(characterId: string) {
-    updateNode(id, {
+  async function addCharacter(characterId: string) {
+    var status = await addCharacterToNode(id, characterId)
+    
+    if (status == 200) {
+      updateNode(id, {
       ...data,
       characterIds: [...(data.characterIds || []), characterId]
     });
+    }
+    
+    // TODO handle
   }
 
   function removeCharacter(characterId: string) {
@@ -52,6 +59,8 @@ export function StoryNode({ id, data }: NodeProps<StoryNodeType>) {
       ...data,
       characterIds: data.characterIds.filter(id => id !== characterId)
     });
+
+    // TODO
   }
 
 
