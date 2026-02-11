@@ -31,6 +31,23 @@ const useStore = create<FlowStore>((set, get) => ({
 
   setCharacters: (characters) => set({ characters }),
 
+  updateNodeData: async (nodeId, newData) => {
+  const nodes = get().nodes.map(n =>
+    n.id === nodeId
+      ? { ...n, data: newData }
+      : n
+  );
+
+  set({ nodes });
+
+  const updatedNode = nodes.find(n => n.id === nodeId);
+
+  if (updatedNode) {
+    await updateNode(updatedNode);
+  }
+},
+
+
   loadCharacters: async () => {
     const flowId = get().flowId;
     if (!flowId) return;

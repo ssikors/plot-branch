@@ -26,7 +26,7 @@ export default function EditorToolbar() {
       </button>
 
       {expanded && (
-        <div className="mt-3 w-60">
+        <div className="mt-3 w-96">
 
           <ul className="max-h-40 overflow-y-auto mb-2">
             {characters.map(c => (

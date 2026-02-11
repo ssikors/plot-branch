@@ -156,13 +156,6 @@ export default function PlotEditorPage() {
           >
             Add node
           </button>
-
-          <button
-            onClick={onSave}
-            className="rounded bg-black px-3 py-1 text-white"
-          >
-            Save flow
-          </button>
         </Panel>
       </ReactFlow>
     </div>

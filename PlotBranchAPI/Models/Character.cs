@@ -7,6 +7,7 @@
         public string Name { get; set; } = string.Empty;
 
         public Guid PlotFlowId { get; set; }
-        public PlotFlow PlotFlow { get; set; }
+        public required PlotFlow PlotFlow { get; set; }
+        public List<NodeEntity> Nodes { get; set; } = [];
     }
 }

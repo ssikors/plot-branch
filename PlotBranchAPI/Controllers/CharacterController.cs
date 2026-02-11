@@ -41,17 +41,18 @@ namespace PlotBranchAPI.Controllers
             if (string.IsNullOrWhiteSpace(dto.Name))
                 return BadRequest("Character name required");
 
-            var flowExists = await _context.PlotFlows
-                .AnyAsync(f => f.Id == graphId);
+            PlotFlow? plotFlow = await _context.PlotFlows
+                .FindAsync(graphId);
 
-            if (!flowExists)
+            if (plotFlow == null)
                 return NotFound("PlotFlow not found");
 
             var character = new Character
             {
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
-                PlotFlowId = graphId
+                PlotFlowId = graphId,
+                PlotFlow = plotFlow
             };
 
             _context.Characters.Add(character);
