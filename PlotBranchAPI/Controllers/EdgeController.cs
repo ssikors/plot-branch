@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using PlotBranchAPI.Data;
-using PlotBranchAPI.Models.DTOs;
-using PlotBranchAPI.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlotBranchAPI.Data;
+using PlotBranchAPI.Models;
+using PlotBranchAPI.Models.DTOs;
 
 namespace PlotBranchAPI.Controllers
 {

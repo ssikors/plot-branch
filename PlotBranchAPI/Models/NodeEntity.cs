@@ -5,7 +5,7 @@
         public Guid Id { get; set; }
 
         public string Type { get; set; }
-        
+
         public NodeData Data { get; set; }
 
         public Guid PlotFlowId { get; set; }

@@ -2,6 +2,6 @@
 {
     public class CharacterToNodeDto
     {
-        public required Guid characterId {  get; set; }
+        public required Guid characterId { get; set; }
     }
 }

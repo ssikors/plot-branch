@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using PlotBranchAPI.Business;
+﻿using Microsoft.AspNetCore.Mvc;
 using PlotBranchAPI.Data;
-using PlotBranchAPI.Models.DTOs;
 using PlotBranchAPI.Models;
+using PlotBranchAPI.Models.DTOs;
 
 namespace PlotBranchAPI.Controllers
 {
@@ -55,25 +52,5 @@ namespace PlotBranchAPI.Controllers
 
             return Ok(new { flow.Id, flow.Name });
         }
-
-
-        //[HttpPost("save")]
-        //public IActionResult SaveGraph([FromBody] GraphDto flow)
-        //{
-
-        //    if (flow == null)
-        //    {
-        //        return BadRequest("Flow is null");
-        //    }
-                
-
-        //    Console.WriteLine($"Received {flow.Nodes?.Count} nodes");
-
-        //    var nodes = GraphConverter.ConvertToNodeTree(flow);
-
-        //    Console.WriteLine(nodes.Count);
-
-        //    return Ok(new { message = "Flow received successfully" });
-        //}
     }
 }
