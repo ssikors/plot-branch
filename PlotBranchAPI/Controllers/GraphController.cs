@@ -36,6 +36,11 @@ namespace PlotBranchAPI.Controllers
             return Ok(flows);
         }
 
+        /// <summary>
+        /// Initializes a new, empty flow
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns>Flow id and name</returns>
         [HttpPost]
         public async Task<IActionResult> CreateFlow([FromBody] CreatePlotFlowDto dto)
         {

@@ -32,6 +32,12 @@ namespace PlotBranchAPI.Controllers
             return Ok(characters);
         }
 
+        /// <summary>
+        /// Adds a character to the list of characters avaiable in a flow (story)
+        /// </summary>
+        /// <param name="graphId"></param>
+        /// <param name="dto"></param>
+        /// <returns>Character dto</returns>
         [HttpPost]
         public async Task<IActionResult> AddCharacter(
             [FromQuery] Guid graphId,
@@ -64,7 +70,12 @@ namespace PlotBranchAPI.Controllers
             });
         }
 
-
+        /// <summary>
+        /// Attaches a character from within the flow to a node
+        /// </summary>
+        /// <param name="nodeId"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost("Node")]
         public async Task<IActionResult> AddCharacterToNode(
                 [FromQuery] Guid nodeId,
