@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlotBranchAPI.Data;
-using PlotBranchAPI.Models;
-using PlotBranchAPI.Models.DTOs;
+using PlotBranchAPI.Application.DTOs;
+using PlotBranchAPI.Application.Services;
+using PlotBranchAPI.Data.Entities;
 
 namespace PlotBranchAPI.Controllers
 {
@@ -10,27 +11,18 @@ namespace PlotBranchAPI.Controllers
     [Route("api/[controller]")]
     public class EdgeController : ControllerBase
     {
-        private readonly GraphDbContext _context;
+        private readonly IEdgeService _edgeService;
 
-        public EdgeController(GraphDbContext context)
+        public EdgeController(IEdgeService edgeService)
         {
-            _context = context;
+            _edgeService = edgeService;
         }
 
 
         [HttpGet]
         public async Task<IActionResult> GetEdges([FromQuery] Guid plotFlowId)
         {
-            var edges = await _context.Edges
-                .Where(e => e.PlotFlowId == plotFlowId)
-                .Select(e => new EdgeDto
-                {
-                    Id = e.Id,
-                    Source = e.Source,
-                    Target = e.Target,
-                    SourceHandle = e.SourceHandle
-                })
-                .ToListAsync();
+            var edges = await _edgeService.GetEdgeDtosAsync(plotFlowId);
 
             return Ok(edges);
         }
@@ -39,17 +31,8 @@ namespace PlotBranchAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddEdge(CreateEdgeDto dto)
         {
-            var edge = new EdgeEntity
-            {
-                Id = Guid.NewGuid(),
-                PlotFlowId = dto.PlotFlowId,
-                Source = dto.Source,
-                Target = dto.Target,
-                SourceHandle = dto.SourceHandle
-            };
 
-            await _context.Edges.AddAsync(edge);
-            await _context.SaveChangesAsync();
+            EdgeEntity edge = await _edgeService.AddEdgeAsync(dto);
 
             return Ok(edge);
         }
