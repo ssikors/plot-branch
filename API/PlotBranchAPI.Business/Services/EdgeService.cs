@@ -30,7 +30,7 @@ namespace PlotBranchAPI.Application.Services
                 SourceHandle = edgeDto.SourceHandle
             };
 
-            edge = await _edgeRepository.AddEdgeAsync(edge); // TODO error?
+            edge = await _edgeRepository.AddEdgeAsync(edge);
 
             return edge;
         }
