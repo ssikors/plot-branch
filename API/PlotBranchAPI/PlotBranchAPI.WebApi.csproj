@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlotBranchAPI.Application\PlotBranchAPI.Application.csproj" />
+    <ProjectReference Include="..\PlotBranchAPI.Business\PlotBranchAPI.Business.csproj" />
+    <ProjectReference Include="..\PlotBranchAPI.Data\PlotBranchAPI.Data.csproj" />
   </ItemGroup>
 
 </Project>

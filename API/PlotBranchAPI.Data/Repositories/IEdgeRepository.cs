@@ -9,8 +9,12 @@ namespace PlotBranchAPI.Data.Repositories
 {
     public interface IEdgeRepository
     {
-        public Task<EdgeEntity> GetEdgesAsync(Guid plotId);
+        public Task<List<EdgeEntity>?> GetEdgesAsync(Guid plotId);
 
+        public Task<EdgeEntity> AddEdgeAsync(EdgeEntity edge);
 
+        public Task<EdgeEntity?> GetEdgeAsync(Guid edgeId);
+
+        public Task DeleteEdgeAsync(EdgeEntity edge);
     }
 }

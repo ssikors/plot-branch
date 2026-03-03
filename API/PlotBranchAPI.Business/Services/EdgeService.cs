@@ -5,18 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PlotBranchAPI.Application.DTOs;
-using PlotBranchAPI.Business.Managers;
+using PlotBranchAPI.Business.Utils.Exceptions;
 using PlotBranchAPI.Data.Entities;
+using PlotBranchAPI.Data.Repositories;
 
 namespace PlotBranchAPI.Application.Services
 {
     public class EdgeService : IEdgeService
     {
-        private readonly IEdgeManager _edgeManager;
+        private readonly IEdgeRepository _edgeRepository;
 
-        public EdgeService(IEdgeManager edgeManager)
+        public EdgeService(IEdgeRepository edgeRepository)
         {
-            _edgeManager = edgeManager;
+            _edgeRepository = edgeRepository;
         }
 
         public async Task<EdgeEntity> AddEdgeAsync(CreateEdgeDto edgeDto)
@@ -29,14 +30,19 @@ namespace PlotBranchAPI.Application.Services
                 SourceHandle = edgeDto.SourceHandle
             };
 
-            edge = await _edgeManager.AddEdgeAsync(edge);
+            edge = await _edgeRepository.AddEdgeAsync(edge); // TODO error?
 
             return edge;
         }
 
         public async Task<List<EdgeDto>> GetEdgeDtosAsync(Guid plotFlowId)
         {
-            List<EdgeEntity> edges = await _edgeManager.GetEdgesAsync(plotFlowId);
+            List<EdgeEntity>? edges = await _edgeRepository.GetEdgesAsync(plotFlowId);
+
+            if (edges == null)
+            {
+                throw new Exception();
+            }
 
             return edges.Select(edge => new EdgeDto
             {
@@ -47,10 +53,16 @@ namespace PlotBranchAPI.Application.Services
             }).ToList();
         }
 
-        public void RemoveEdgeAsync(Guid edgeId)
+        public async Task RemoveEdgeAsync(Guid edgeId)
         {
-            
+            EdgeEntity? edge = await _edgeRepository.GetEdgeAsync(edgeId);
+
+            if (edge == null)
+            {
+                throw new EdgeNotFoundException();
+            }
+
+            await _edgeRepository.DeleteEdgeAsync(edge);
         }
     }
-}
 }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PlotBranchAPI.Data;
 using PlotBranchAPI.Application.DTOs;
 using PlotBranchAPI.Application.Services;
+using PlotBranchAPI.Business.Utils.Exceptions;
 using PlotBranchAPI.Data.Entities;
+
 
 namespace PlotBranchAPI.Controllers
 {
@@ -22,33 +22,46 @@ namespace PlotBranchAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEdges([FromQuery] Guid plotFlowId)
         {
-            var edges = await _edgeService.GetEdgeDtosAsync(plotFlowId);
+            try
+            {
+                var edges = await _edgeService.GetEdgeDtosAsync(plotFlowId);
 
-            return Ok(edges);
+                return Ok(edges);
+            }  catch (Exception)
+            {
+                return BadRequest("Could not retrieve edges");
+            }
         }
 
 
         [HttpPost]
         public async Task<IActionResult> AddEdge(CreateEdgeDto dto)
         {
+            try
+            {
+                EdgeEntity edge = await _edgeService.AddEdgeAsync(dto);
 
-            EdgeEntity edge = await _edgeService.AddEdgeAsync(dto);
-
-            return Ok(edge);
+                return Ok(edge);
+            } catch (Exception)
+            {
+                return BadRequest("Could not add edge");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEdge(Guid id)
         {
-            var edge = await _context.Edges.FindAsync(id);
-
-            if (edge == null)
-                return NotFound();
-
-            _context.Edges.Remove(edge);
-            await _context.SaveChangesAsync();
-
-            return Ok();
+            try
+            {
+                await _edgeService.RemoveEdgeAsync(id);
+                return Ok();
+            } catch (EdgeNotFoundException)
+            {
+                return NotFound("Edge not found");
+            } catch (Exception)
+            {
+                return BadRequest("Could not delete edge");
+            }
         }
     }
 
