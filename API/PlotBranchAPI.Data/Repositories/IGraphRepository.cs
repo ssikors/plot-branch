@@ -10,6 +10,7 @@ namespace PlotBranchAPI.Data.Repositories
     public interface IGraphRepository
     {
         public Task<PlotFlow> CreateFlowAsync(PlotFlow flow);
+        public Task<PlotFlow?> GetPlotFlowAsync(Guid flowId);
         public Task<List<PlotFlow>> GetAllFlowsAsync();
     }
 }

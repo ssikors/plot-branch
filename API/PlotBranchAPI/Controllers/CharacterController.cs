@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlotBranchAPI.Application.DTOs;
+using PlotBranchAPI.Business.Services;
+using PlotBranchAPI.Business.Utils.Exceptions;
 using PlotBranchAPI.Data;
 
 
@@ -9,26 +12,29 @@ namespace PlotBranchAPI.Controllers
     [Route("api/[controller]")]
     public class CharacterController : ControllerBase
     {
-        private readonly GraphDbContext _context;
+        private readonly ICharacterService _characterService;
 
-        public CharacterController(GraphDbContext context)
+        public CharacterController(ICharacterService characterService)
         {
-            _context = context;
+            _characterService = characterService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetCharacters([FromQuery] Guid graphId)
         {
-            var characters = await _context.Characters
-                .Where(c => c.PlotFlowId == graphId)
-                .Select(c => new CharacterDto
-                {
-                    Id = c.Id,
-                    Name = c.Name
-                })
-                .ToListAsync();
+            try
+            {
+                List<CharacterDto> characters = await _characterService.GetPlotCharacters(graphId);
 
-            return Ok(characters);
+                return Ok(characters);
+            } catch (PlotFlowNotFoundException)
+            {
+                return NotFound("Could not find the plotflow");
+            } catch (Exception ex)
+            {
+                return BadRequest("Could not get characters");
+            }
+            
         }
 
         [HttpPost]
@@ -39,28 +45,17 @@ namespace PlotBranchAPI.Controllers
             if (string.IsNullOrWhiteSpace(dto.Name))
                 return BadRequest("Character name required");
 
-            PlotFlow? plotFlow = await _context.PlotFlows
-                .FindAsync(graphId);
-
-            if (plotFlow == null)
-                return NotFound("PlotFlow not found");
-
-            var character = new Character
+            try
             {
-                Id = Guid.NewGuid(),
-                Name = dto.Name,
-                PlotFlowId = graphId,
-                PlotFlow = plotFlow
-            };
-
-            _context.Characters.Add(character);
-            await _context.SaveChangesAsync();
-
-            return Ok(new CharacterDto
+                CharacterDto character = await _characterService.AddCharacter(dto, graphId);
+                return Ok(character);
+            } catch (PlotFlowNotFoundException)
             {
-                Id = character.Id,
-                Name = character.Name
-            });
+                return NotFound("The PlotFlow for this character was not found");
+            } catch (Exception ex)
+            {
+                return BadRequest("Could not add character");
+            }
         }
 
 
@@ -70,25 +65,24 @@ namespace PlotBranchAPI.Controllers
                 [FromBody] CharacterToNodeDto dto
             )
         {
-            NodeEntity? node = await _context.Nodes.FindAsync(nodeId);
 
-            if (node == null)
+            try
             {
-                return NotFound("Node not found");
+                await _characterService.AddCharacterToNode(dto, nodeId);
+                return Ok();
             }
-
-            Character? character = await _context.Characters.FindAsync(dto.characterId);
-
-            if (character == null)
+            catch (NodeNotFoundException)
             {
-                return NotFound("Character not found");
+                return NotFound("The Node for this character was not found");
             }
-
-            node.Characters.Add(character);
-
-            await _context.SaveChangesAsync();
-
-            return Ok();
+            catch (CharacterNotFoundException)
+            {
+                return NotFound("Could not find the character");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Could not attach the character to node");
+            }
         }
     }
 

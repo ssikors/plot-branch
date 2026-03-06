@@ -12,6 +12,7 @@ namespace PlotBranchAPI.Data.Repositories
     {
         private readonly GraphDbContext _context;
 
+        
         public GraphRepository(GraphDbContext context)
         {
             _context = context;
@@ -21,6 +22,11 @@ namespace PlotBranchAPI.Data.Repositories
         {
             await _context.PlotFlows.AddAsync(flow);
             return flow;
+        }
+
+        public async Task<PlotFlow?> GetPlotFlowAsync(Guid flowId)
+        {
+            return await _context.PlotFlows.FindAsync(flowId);
         }
 
         public async Task<List<PlotFlow>> GetAllFlowsAsync()
