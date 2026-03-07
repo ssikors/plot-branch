@@ -10,38 +10,33 @@ namespace PlotBranchAPI.Data.Repositories
 {
     public class CharacterRepository : ICharacterRepository
     {
-        private readonly GraphDbContext _graphDbContext;
+        private readonly GraphDbContext _context;
 
         public CharacterRepository(GraphDbContext graphDbContext)
         {
-            _graphDbContext = graphDbContext;
+            _context = graphDbContext;
         }
 
         public async Task AddCharacterAsync(Character character)
         {
-            await _graphDbContext.AddAsync(character);
-            await _graphDbContext.SaveChangesAsync();
+            await _context.AddAsync(character);
+            await _context.SaveChangesAsync();
         }
 
         public async Task AddCharacterToNodeAsync(Character character, NodeEntity node)
         {
             node.Characters.Add(character);
-            await _graphDbContext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<Character?> GetCharacterAsync(Guid id)
         {
-            return await _graphDbContext.Characters.FindAsync(id);
+            return await _context.Characters.FindAsync(id);
         }
 
-        public async Task<NodeEntity?> GetNodeAsync(Guid nodeId)
+        public async Task<List<Character>> GetPlotCharactersAsync(PlotFlow plot)
         {
-            return await _graphDbContext.Nodes.FindAsync(nodeId);
-        }
-
-        public async Task<PlotFlow?> GetPlotWithCharactersAsync(Guid plotId)
-        {
-            return await _graphDbContext.PlotFlows.Include(f => f.Characters).Where(f => f.Id == plotId).FirstOrDefaultAsync();
+            return await _context.Characters.Where(character => character.PlotFlow == plot).ToListAsync();
         }
     }
 }
