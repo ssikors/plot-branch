@@ -21,6 +21,7 @@ namespace PlotBranchAPI.Data.Repositories
         public async Task<PlotFlow> CreateFlowAsync(PlotFlow flow)
         {
             await _context.PlotFlows.AddAsync(flow);
+            await _context.SaveChangesAsync();
             return flow;
         }
 
