@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlotBranchAPI.Application.DTOs;
+using PlotBranchAPI.Business.Services;
+using PlotBranchAPI.Business.Utils.Exceptions;
 using PlotBranchAPI.Data;
-using PlotBranchAPI.Models;
-using PlotBranchAPI.Models.DTOs;
+using PlotBranchAPI.Data.Entities;
 
 namespace PlotBranchAPI.Controllers
 {
@@ -10,27 +12,17 @@ namespace PlotBranchAPI.Controllers
     [Route("api/[controller]")]
     public class NodeController : ControllerBase
     {
-        private readonly GraphDbContext _context;
+        private readonly INodeService _nodeSevice;
 
-        public NodeController(GraphDbContext context)
+        public NodeController(INodeService nodeService)
         {
-            _context = context;
+            _nodeSevice = nodeService;
         }
 
         [HttpGet("all")]
         public async Task<IActionResult> GetAllNodes()
         {
-            var nodes = await _context.Nodes
-                .Include(n => n.Data)
-                .Select(n => new NodeDto
-                {
-                    Id = n.Id,
-                    Type = n.Type,
-                    Data = new NodeDataDto { Description = n.Data.Description },
-                    PositionX = n.PositionX,
-                    PositionY = n.PositionY
-                })
-                .ToListAsync();
+            List<NodeDto> nodes = await _nodeSevice.GetAllNodes();
 
             return Ok(nodes);
         }
@@ -38,23 +30,17 @@ namespace PlotBranchAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetNodes([FromQuery] Guid plotFlowId)
         {
-            Console.WriteLine($"Query PlotFlowId: {plotFlowId}");
-
-            var nodes = await _context.Nodes
-                .Include(n => n.Data)
-                .Include(n => n.Characters)
-                .Where(n => n.PlotFlowId == plotFlowId)
-                .Select(n => new NodeDto
-                {
-                    Id = n.Id,
-                    Type = n.Type,
-                    Data = new NodeDataDto { Description = n.Data.Description, CharacterIds = n.Characters.Select(c => c.Id.ToString()).ToList() },
-                    PositionX = n.PositionX,
-                    PositionY = n.PositionY
-                })
-                .ToListAsync();
-
-            return Ok(nodes);
+            try
+            {
+                var nodes = await _nodeSevice.GetNodes(plotFlowId);
+                return Ok(nodes);
+            } catch (PlotFlowNotFoundException)
+            {
+                return NotFound("PlotFlow not found");
+            } catch ( Exception ex )
+            {
+                return BadRequest("Could not get nodes");
+            }
         }
 
 
@@ -62,40 +48,20 @@ namespace PlotBranchAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNode(CreateNodeDto dto)
         {
-            var plotFlow = await _context.PlotFlows.FindAsync(dto.PlotFlowId);
 
-            if (plotFlow == null)
+            try
             {
-                return BadRequest("PlotFlow not found");
+                NodeDto nodeDto = await _nodeSevice.AddNode(dto);
+                return Ok(nodeDto);
             }
-
-            var node = new NodeEntity
+            catch (PlotFlowNotFoundException)
             {
-                Id = Guid.NewGuid(),
-                Type = dto.Type,
-                PlotFlow = plotFlow,
-                PositionX = dto.PositionX,
-                PositionY = dto.PositionY,
-                Data = new NodeData
-                {
-                    Description = dto.Data.Description
-                }
-            };
-
-            await _context.Nodes.AddAsync(node);
-            await _context.SaveChangesAsync();
-
-
-            var newNode = new NodeDto
+                return NotFound("PlotFlow not found");
+            }
+            catch (Exception ex)
             {
-                Id = node.Id,
-                Type = node.Type,
-                Data = new NodeDataDto { Description = node.Data.Description },
-                PositionX = node.PositionX,
-                PositionY = node.PositionY
-            };
-
-            return Ok(newNode);
+                return BadRequest("Could not add node");
+            }
         }
 
         [HttpPut("{id}")]
@@ -104,33 +70,18 @@ namespace PlotBranchAPI.Controllers
             if (id != dto.Id)
                 return BadRequest("Id mismatch");
 
-            var node = await _context.Nodes
-                .Include(n => n.Data)
-                .FirstOrDefaultAsync(n => n.Id == id);
 
-            if (node == null)
-                return NotFound();
-
-            node.Type = dto.Type;
-            node.PositionX = dto.PositionX;
-            node.PositionY = dto.PositionY;
-
-            if (node.Data == null)
+            try
             {
-                node.Data = new NodeData
-                {
-                    NodeEntityId = node.Id
-                };
-            }
-
-            if (dto.Data != null)
+                NodeDto updatedDto = await _nodeSevice.UpdateNode(dto);
+                return Ok(updatedDto);
+            } catch (NodeNotFoundException)
             {
-                node.Data.Description = dto.Data.Description;
+                return NotFound("Could not find the node");
+            } catch (Exception e)
+            {
+                return BadRequest("Could not update node");
             }
-
-            await _context.SaveChangesAsync();
-
-            return Ok(dto);
         }
 
 
@@ -139,17 +90,18 @@ namespace PlotBranchAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNode(Guid id)
         {
-            var node = await _context.Nodes
-                .Include(n => n.Data)
-                .FirstOrDefaultAsync(n => n.Id == id);
 
-            if (node == null)
-                return NotFound();
-
-            _context.Nodes.Remove(node);
-            await _context.SaveChangesAsync();
-
-            return Ok();
+            try
+            {
+                await _nodeSevice.DeleteNode(id);
+                return Ok();
+            } catch (NodeNotFoundException)
+            {
+                return NotFound("Could not find the node to delete");
+            } catch (Exception e)
+            {
+                return BadRequest("Could not delete node");
+            }
         }
     }
 
