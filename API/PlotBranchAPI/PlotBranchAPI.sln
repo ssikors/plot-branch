@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotBranchAPI.Business", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotBranchAPI.Data", "..\PlotBranchAPI.Data\PlotBranchAPI.Data.csproj", "{AB250CE3-5951-4716-80F3-B7F2F5EC8E42}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotBranch.Tests", "..\PlotBranch.Tests\PlotBranch.Tests.csproj", "{1ACF6E08-41AA-4261-9C48-B00704955695}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{AB250CE3-5951-4716-80F3-B7F2F5EC8E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB250CE3-5951-4716-80F3-B7F2F5EC8E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB250CE3-5951-4716-80F3-B7F2F5EC8E42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ACF6E08-41AA-4261-9C48-B00704955695}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ACF6E08-41AA-4261-9C48-B00704955695}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ACF6E08-41AA-4261-9C48-B00704955695}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ACF6E08-41AA-4261-9C48-B00704955695}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
